@@ -1,9 +1,10 @@
 import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-
+import { supabase } from "@/utils/supabase/client";
 
 // Sostituire questo array con il risultato della tua query al DB
-const getPrezziDalDB = async () => {
+// Commento perchè inserita query a DB (vedi pezzo di codice subito sotto)
+/*const getPrezziDalDB = async () => {
   return [
     { provincia: "Belluno", prezzo: 4.20 },
     { provincia: "Treviso", prezzo: 3.50 },
@@ -13,6 +14,51 @@ const getPrezziDalDB = async () => {
     { provincia: "Venezia", prezzo: 4.80 },
     { provincia: "Rovigo", prezzo: 2.90 },
   ];
+};*/
+
+const getPrezziDalDB = async () => {
+  // Query a Supabase per recuperare i prezzi live
+  const { data, error } = await supabase
+    .from('bars')
+    .select('location_provincia, price');
+
+  if (error) {
+    console.error("Errore durante il recupero dei prezzi:", error);
+    return []; // Restituiamo un array vuoto come fallback visivo
+  }
+
+if (!data || data.length === 0) return [];
+
+  // 2. Raggruppiamo i bar per provincia e calcoliamo il prezzo medio
+  // Usiamo un oggetto per tenere traccia della somma dei prezzi e del numero di bar per ogni provincia
+  const provinceMap = data.reduce((acc, bar) => {
+    const prov = bar.location_provincia;
+    const prezzo = bar.price;
+
+    // Se manca la provincia o il prezzo, saltiamo il record
+    if (!prov || typeof prezzo !== 'number') return acc;
+
+    // Se è la prima volta che incontriamo questa provincia, la inizializziamo
+    if (!acc[prov]) {
+      acc[prov] = { totale: 0, conteggio: 0 };
+    }
+    
+    // Aggiungiamo il prezzo al totale e incrementiamo il conteggio
+    acc[prov].totale += prezzo;
+    acc[prov].conteggio += 1;
+
+    return acc;
+  }, {} as Record<string, { totale: number; conteggio: number }>);
+
+  // 3. Trasformiamo l'oggetto nell'array esatto che si aspetta il tuo frontend
+  const prezziMedi = Object.keys(provinceMap).map((prov) => {
+    return {
+      provincia: prov,
+      prezzo: provinceMap[prov].totale / provinceMap[prov].conteggio,
+    };
+  });
+
+  return prezziMedi;
 };
 
 // Mappa statice delle coordinate in percentuale sull'immagine per ogni provincia
@@ -29,28 +75,57 @@ const coordinateProvince: Record<string, { top: string; left: string }> = {
 
 // 3. Funzione per colorare il pallino in base al prezzo (es. semaforo)
 const getColorePrezzo = (prezzo: number) => {
-  if (prezzo >= 4.5) return "bg-red-500 text-white"; // Caro
-  if (prezzo >= 3.5) return "bg-orange-400 text-black"; // Medio
+  if (prezzo >= 6.0) return "bg-red-500 text-white"; // Caro
+  if (prezzo >= 4.0) return "bg-orange-400 text-black"; // Medio
   return "bg-green-400 text-black"; // Economico
+};
+
+// Funzione per ottenere solo il numero totale di bar (super veloce)
+const getcountBars = async () => {
+  const { count, error } = await supabase
+    .from('bars')
+    .select('*', { count: 'exact', head: true }); // head: true chiede a Supabase di non scaricare i dati, ma solo il conteggio!
+
+  if (error) {
+    console.error("Errore nel conteggio dei bar:", error);
+    return 0;
+  }
+
+  return count || 0;
+};
+
+// Funzione per ottenere solo il numero totale di province presenti a db
+const getcountProvinces = async () => {
+  const { data, error } = await supabase
+    .from('bars')
+    .select('location_provincia'); // head: true chiede a Supabase di non scaricare i dati, ma solo il conteggio!
+
+  if (error) {
+    console.error("Errore nel conteggio delle province:", error);
+    return 0;
+  }
+
+  const provinceUnivoche = new Set(data.map(item => item.location_provincia));
+  return provinceUnivoche.size;
+
 };
 
 export default async function MapOverlay() {
   // variabile) in cui verranno salvati
   const datiPrezzi = await getPrezziDalDB()
-  const countBars = 6522;
-  const countProvinces = 32;  
+  const countBars = await getcountBars();
+  const countProvinces = await getcountProvinces();
 
 
   // Esempio di funzione per calcolare la frequenza dei prezzi in fasce da 1 euro
 const calcolaFrequenzaPrezzi = (datiPrezzi: { prezzo: number }[]) => {
   // Definiamo le fasce (es. 2-3€, 3-4€, 4-5€, 5-6€, 6-7€, 7-8€+)
   const fasce = [
-    { etichetta: "2-3€", min: 2, max: 3, conteggio: 0 },
+    { etichetta: "0-3€", min: 0, max: 3, conteggio: 0 },
     { etichetta: "3-4€", min: 3, max: 4, conteggio: 0 },
-    { etichetta: "4-5€", min: 4, max: 5, conteggio: 0 },
-    { etichetta: "5-6€", min: 5, max: 6, conteggio: 0 },
-    { etichetta: "6-7€", min: 6, max: 7, conteggio: 0 },
-    { etichetta: "7-10€", min: 7, max: 10, conteggio: 0 },
+    { etichetta: "4-6€", min: 4, max: 6, conteggio: 0 },
+    { etichetta: "6-8€", min: 6, max: 8, conteggio: 0 },
+    { etichetta: ">8€", min: 8, max: 1000, conteggio: 0 },
   ];
 
   // Contiamo la frequenza per ogni fascia
