@@ -1,6 +1,36 @@
 import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { supabase } from "@/utils/supabase/client";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { FieldLabel } from "@base-ui/react/field";
+
+const lista_province = [
+  { label: "Belluno", value: "Belluno" },
+  { label: "Padova", value: "Padova" },
+  { label: "Rovigo", value: "Rovigo" },
+  { label: "Treviso", value: "Treviso" },
+  { label: "Venezia", value: "Venezia" },
+  { label: "Verona", value: "Verona" },
+  { label: "Vicenza", value: "Vicenza" },
+]
+
+const lista_spritz = [
+  { label: "Aperol", value: "Aperol" },
+  { label: "Campari", value: "Campari" },
+  { label: "Cynar", value: "Cynar" },
+  { label: "Select", value: "Select" },
+]
 
 // Sostituire questo array con il risultato della tua query al DB
 // Commento perchè inserita query a DB (vedi pezzo di codice subito sotto)
@@ -50,7 +80,7 @@ if (!data || data.length === 0) return [];
     return acc;
   }, {} as Record<string, { totale: number; conteggio: number }>);
 
-  // 3. Trasformiamo l'oggetto nell'array esatto che si aspetta il tuo frontend
+  // 3. Trasformiamo l'oggetto nell'array che si aspetta il  frontend
   const prezziMedi = Object.keys(provinceMap).map((prov) => {
     return {
       provincia: prov,
@@ -153,27 +183,91 @@ const calcolaFrequenzaPrezzi = (datiPrezzi: { prezzo: number }[]) => {
       {/* Contenitore principale (La Card) */}
       {/* Aggiungiamo bg-[url('/background-card.png')] per l'immagine */}
       {/* bg-cover e bg-center fanno in modo che l'immagine riempia bene lo spazio */}
-      <div className="w-full max-w-7xl my-6 py-24 px-8 rounded-3xl border text-black shadow-lg bg-[url('/RicercaSpritz.jpeg')] bg-cover bg-center">
+      <div className="w-full max-w-7xl my-6 py-24 px-8 rounded-3xl border border-black/20 text-black shadow-xl bg-[url('/RicercaSpritz.jpeg')] bg-cover bg-center">
 
         <div className="flex flex-col items-center text-center">
-          {/* Titolo più grande */}
-          <h2 className="text-4xl md:text-5xl font-bold text-black mb-4">
+          {/* Titolo */}
+          <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-2 drop-shadow-md">
             Trova il tuo locale
           </h2>
           
-          {/* Sottotitolo dinamico */}
-          <p className="text-lg font-bold text-black mb-10">
+          {/* Sottotitolo */}
+          <p className="text-lg font-bold text-black mb-10 drop-shadow-md">
             {countBars} bar · {countProvinces} province
           </p>
           
-        {/* Barra di ricerca opaca */}
-        <div className="w-full font-bold text-black max-w-2xl">
-          <input 
-            type="text" 
-            placeholder="Nome del locale..." 
-            className="w-full p-6 rounded-full border border-black bg-orange-200/75 text-black font-bold text-lg shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-500/30 placeholder:text-gray-500" 
-          />
-        </div>
+          {/* Griglia con sfondi parzialmente trasparenti (bg-white/40) ma bordi netti e spessi (border-2 border-black/70) */}
+          <div className="grid w-full gap-4 grid-cols-1 md:grid-cols-5 items-center">
+            
+            {/* Campo 1: Nome del locale */}
+            <div className="w-full h-14 rounded-2xl shadow-lg bg-white/40 backdrop-blur-md border-2 border-black/70 px-4 flex items-center transition-all hover:bg-white/60 focus-within:bg-white/80 focus-within:border-black">
+              <Input 
+                placeholder="Nome del locale" 
+                className="w-full h-full bg-transparent border-0 text-black font-bold placeholder:text-black/80 focus-visible:ring-0 shadow-none p-0" 
+              />
+            </div>  
+
+            {/* Campo 2: Select Province */}
+            <div className="w-full h-14 rounded-2xl shadow-lg bg-white/40 backdrop-blur-md border-2 border-black/70 px-4 flex items-center transition-all hover:bg-white/60 focus-within:bg-white/80">
+              <Select items={lista_province}>
+                <SelectTrigger className="w-full h-full bg-transparent border-0 text-black font-bold shadow-none focus:ring-0 p-0 data-[placeholder]:text-black/80">
+                  <SelectValue placeholder="Provincia" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {lista_province.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>           
+            </div>
+
+            {/* Campo 3: Città */}
+            <div className="w-full h-14 rounded-2xl shadow-lg bg-white/40 backdrop-blur-md border-2 border-black/70 px-4 flex items-center transition-all hover:bg-white/60 focus-within:bg-white/80 focus-within:border-black"> 
+              <Input 
+                placeholder="Città" 
+                className="w-full h-full bg-transparent border-0 text-black font-bold placeholder:text-black/80 focus-visible:ring-0 shadow-none p-0" 
+              />       
+            </div>  
+
+            {/* Campo 4: Prezzo */}
+            <div className="w-full h-14 rounded-2xl shadow-lg bg-white/40 backdrop-blur-md border-2 border-black/70 px-4 flex items-center transition-all hover:bg-white/60 focus-within:bg-white/80 focus-within:border-black">            
+              <Input 
+                type="number"
+                step="any"
+                placeholder="Prezzo (es. 3.50)" 
+                style={{ colorScheme: 'light' }}
+                className="w-full h-full bg-transparent border-0 text-black font-bold placeholder:text-black/80 placeholder:opacity-100 focus-visible:ring-0 shadow-none p-0" 
+              />       
+            </div>
+            
+            {/* Campo 5: Select Tipo Spritz */}
+            <div className="w-full h-14 rounded-2xl shadow-lg bg-white/40 backdrop-blur-md border-2 border-black/70 px-4 flex items-center transition-all hover:bg-white/60 focus-within:bg-white/80">
+              <Select items={lista_spritz}>
+                <SelectTrigger className="w-full h-full bg-transparent border-0 text-black font-bold shadow-none focus:ring-0 p-0 data-[placeholder]:text-black/80">
+                  <SelectValue placeholder="Tipo Spritz" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {lista_spritz.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>           
+            </div>
+
+          </div>
+
+          <Button variant="outline">Inserisci</Button>
+          <Checkbox id="toggle-checkbox" name="toggle-checkbox" disabled />
+
+
         </div>
       </div>
       
