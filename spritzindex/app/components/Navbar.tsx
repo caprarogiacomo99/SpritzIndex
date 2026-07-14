@@ -1,5 +1,22 @@
 import { supabase } from "@/utils/supabase/client";
 
+const getcountBars = async () => {
+  const { count, error } = await supabase
+    .from('bars')
+    .select('*', { count: 'exact', head: true });
+  if (error) return 0;
+  return count || 0;
+};
+
+const getcountProvinces = async () => {
+  const { data, error } = await supabase
+    .from('bars')
+    .select('location_provincia');
+  if (error || !data) return 0;
+  const provinceUnivoche = new Set(data.map(item => item.location_provincia));
+  return provinceUnivoche.size;
+};
+
 const getMediaPrezziTotale = async () => {
   // 1. Scarichiamo solo la colonna "price" di tutti i bar
   const { data, error } = await supabase
@@ -25,6 +42,8 @@ const getMediaPrezziTotale = async () => {
 
 const Navbar = async () => {  // Variabileper media sui prezzi.
   const mediaPrezzo = await getMediaPrezziTotale();
+  const countBars = await getcountBars();
+  const countProvinces = await getcountProvinces();
 
   return (
     // 1. Modifica al contenitore: flex-col (mobile) -> md:flex-row (desktop). gap-8 per separare i blocchi su mobile.
@@ -56,7 +75,9 @@ const Navbar = async () => {  // Variabileper media sui prezzi.
         
         {/* Testo finale: aggiunto text-left (mobile) e text-right (desktop) per correggere l'allineamento interno */}
         <span className="text-sm tracking-wide text-left md:text-right text-gray-500">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        <p className="text-lg font-bold text-black mb-10 drop-shadow-md">
+          {countBars} bar · {countProvinces} province
+        </p>        
         </span>
         
       </div>
