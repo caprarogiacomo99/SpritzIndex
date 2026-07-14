@@ -145,10 +145,10 @@ export default async function MapOverlay() {
   const prezzoMedioPerOgniProvincia = calcolaPrezziMediPerProvincia(prezziDalDB);
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-2">
+    <main className="flex flex-col items-center p-4">
            
       {/* Box per la mappa */}
-      <div className="grid w-full gap-6 grid-cols-1 md:grid-cols-2 items-center">
+      <div className="grid w-full gap-4 grid-cols-1 md:grid-cols-2 items-center">
           <div className="relative w-full aspect-[5/5] rounded-3xl overflow-hidden shadow-2xl ">             
 
               {/* Immagine di sfondo */}

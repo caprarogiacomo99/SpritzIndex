@@ -120,10 +120,10 @@ const handleConfermaInserimentoDB = async () => {
 
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-4">
+    <main className="flex flex-col items-center p-4">
       
       {/* Contenitore principale (La Card) */}
-      <div className="w-full max-w-7xl my-6 py-24 px-8 rounded-3xl border border-black/20 text-black shadow-xl bg-[url('/RicercaSpritz.jpeg')] bg-cover bg-center">
+      <div className="w-full w-full py-12 px-8 rounded-3xl border border-black/20 text-black shadow-xl bg-[url('/RicercaSpritz.jpeg')] bg-cover bg-center">
         <div className="flex flex-col items-center text-center">
           <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-2 drop-shadow-md">
             Trova il tuo locale
@@ -199,33 +199,36 @@ const handleConfermaInserimentoDB = async () => {
 
           </div>
 
-          <div className="flex flex-col items-center mt-6 gap-4">
-            <div className="flex items-center space-x-2 bg-white/60 px-4 py-2 rounded-xl border border-black/20">
+          {/* Blocco inferiore con checkbox a sinistra e pulsante a destra */}
+          <div className="flex flex-col md:flex-row justify-between items-center w-full gap-3 mt-2">
+            <div className="flex items-center space-x-3 bg-white/60 px-3 py-2 rounded-xl border border-black/25 text-left">
               <Checkbox 
                 id="toggle-checkbox" 
                 checked={isAdult} 
-                onCheckedChange={(checked) => setIsAdult(!!checked)} 
+                onCheckedChange={(checked) => setIsAdult(!!checked)}
+                className="scale-100 data-[state=checked]:bg-stone-800 data-[state=checked]:border-stone-800 shrink-0" 
               />
-              <label htmlFor="toggle-checkbox" className="text-sm text-black font-bold cursor-pointer">
-                Confermo di aver più di 18 anni e di voler contribuire alla community con dati reali.
-              </label>
+            <div className="block max-w-[325px]">
+                  <label htmlFor="toggle-checkbox" className="text-xs leading-tight text-black font-bold cursor-pointer select-none">
+                    Confermo di aver più di 18 anni e di voler contribuire alla community con dati reali.
+                  </label>
+            </div>
             </div>
 
             <Button 
               onClick={handleAvviaVerifica}
               disabled={!isFormValid || isLoading}
-              className="bg-orange-600 hover:bg-orange-700 text-white font-extrabold px-6 py-3 rounded-xl shadow-lg cursor-pointer transition-all"
+              className="scale-120 bg-stone-800 hover:bg-stone-950 text-white font-extrabold px-6 py-2 rounded-xl shadow-md cursor-pointer transition-all text-xs h-9 shrink-0 ml-auto md:ml-0"
             >
               {isLoading ? "Verifica in corso..." : "Verifica e Invia"}
             </Button>
-
-            {messaggio && (
-              <p className={`text-sm font-bold mt-2 ${messaggio.includes("successo") ? "text-green-800 bg-green-100/80 px-3 py-1 rounded-lg" : "text-red-800 bg-red-100/80 px-3 py-1 rounded-lg"}`}>
-                {messaggio}
-              </p>
-            )}
           </div>
 
+          {messaggio && (
+            <p className={`text-[11px] font-bold mt-2 text-center w-full ${messaggio.includes("successo") ? "text-green-800 bg-green-100/80 px-2 py-0.5 rounded-md" : "text-red-800 bg-red-100/80 px-2 py-0.5 rounded-md"}`}>
+              {messaggio}
+            </p>
+          )}
         </div>
       </div>
       
