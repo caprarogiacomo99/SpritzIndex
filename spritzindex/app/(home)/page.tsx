@@ -2,10 +2,10 @@
 
 import { supabase } from "@/utils/supabase/client";
 import { useState, useEffect } from "react";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
+import { Input } from "@/app/components/ui/input";
+import { Button } from "@/app/components/ui/button";
+import { Checkbox } from "@/app/components/ui/checkbox";
 
 const lista_province = [
   { label: "Belluno", value: "Belluno" },

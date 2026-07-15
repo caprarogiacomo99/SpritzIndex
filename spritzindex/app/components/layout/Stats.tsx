@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { supabase } from "@/utils/supabase/client";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { AspectRatio } from "@/app/components/ui/aspect-ratio";
 
 
 const lista_province = [
@@ -30,22 +30,6 @@ const coordinateProvince: Record<string, { top: string; left: string }> = {
   "Rovigo":  { top: "81%", left: "58%" },
 };
 
-const getcountBars = async () => {
-  const { count, error } = await supabase
-    .from('bars')
-    .select('*', { count: 'exact', head: true });
-  if (error) return 0;
-  return count || 0;
-};
-
-const getcountProvinces = async () => {
-  const { data, error } = await supabase
-    .from('bars')
-    .select('location_provincia');
-  if (error || !data) return 0;
-  const provinceUnivoche = new Set(data.map(item => item.location_provincia));
-  return provinceUnivoche.size;
-};
 
 const getColorePrezzo = (prezzo: number) => {
   if (prezzo >= 6.0) return "bg-red-500 text-white";
@@ -141,18 +125,30 @@ const calcolaPrezziMediPerProvinciaETipo = (datiGrezzi: any[]) => {
   });
 };
 
+const inserisciBarNelDB = async (nuovoBar: {
+  name: string;
+  location_provincia: string;
+  location_citta: string;
+  price: number;
+  type: string;
+}) => {
+  const { error } = await supabase.from('bars').insert([nuovoBar]);
+  if (error) {
+    console.error("Errore durante l'inserimento:", error.message);
+    return false;
+  }
+  return true;
+};
 
 export default async function MapOverlay() {
   const prezziDalDB = await getPrezziDalDB();
-  const countBars = await getcountBars();
-  const countProvinces = await getcountProvinces();
   const prezzoMedioPerOgniProvincia = calcolaPrezziMediPerProvincia(prezziDalDB);
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-4">
+    <main className="flex flex-col items-center p-4">
            
       {/* Box per la mappa */}
-      <div className="grid w-full gap-6 grid-cols-1 md:grid-cols-2 items-center">
+      <div className="grid w-full gap-4 grid-cols-1 md:grid-cols-2 items-center">
           <div className="relative w-full aspect-[5/5] rounded-3xl overflow-hidden shadow-2xl ">             
 
               {/* Immagine di sfondo */}
@@ -200,8 +196,8 @@ export default async function MapOverlay() {
                       {/* Lista delle province */}
                       <div className="space-y-3">
                         {prezzoMedioPerOgniProvincia.map((dato) => {
-                          // Calcoliamo la percentuale per la barra orizzontale (ipotizzando 6€ come massimo di scala)
-                          const maxPrezzoValore = 6.0; 
+                          // Calcoliamo la percentuale per la barra orizzontale (ipotizzando 10€ come massimo di scala)
+                          const maxPrezzoValore = 10.0; 
                           const percentuale = Math.min((dato.prezzo / maxPrezzoValore) * 100, 100);
 
                           return (
@@ -224,7 +220,7 @@ export default async function MapOverlay() {
                         })}
                       </div>
                       <div className="text-center text-xs text-slate-400 pt-2 border-t mt-4">
-                        Lorem ipsum
+                        Prezzi medi per provincia calcolati sui dati inseriti dagli utenti.
                       </div>
                     </div>
               </AspectRatio>
@@ -322,7 +318,7 @@ export default async function MapOverlay() {
                       </div>
 
                       <div className="text-center text-xs text-slate-400 pt-2 border-t mt-4">
-                        Statistiche elaborate sulle segnalazioni del DB
+                        Statistiche elaborate suli dati inseriti nel DataBase.
                       </div>
 
                     </div>

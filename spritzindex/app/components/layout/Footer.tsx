@@ -1,4 +1,4 @@
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { AspectRatio } from "@/app/components/ui/aspect-ratio";
 
 const Footer = () => {
   return (
