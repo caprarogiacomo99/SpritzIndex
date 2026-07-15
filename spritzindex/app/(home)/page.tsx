@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import { supabase } from "@/utils/supabase/client";
 import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
@@ -117,7 +119,6 @@ const handleConfermaInserimentoDB = async () => {
       setMessaggio(`Errore DB: ${error.message || "Controlla la console"}`);
     }
   };
-
 
   return (
     <main className="flex flex-col items-center p-4">
