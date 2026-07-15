@@ -220,7 +220,7 @@ export default async function MapOverlay() {
                         })}
                       </div>
                       <div className="text-center text-xs text-slate-400 pt-2 border-t mt-4">
-                        Lorem ipsum
+                        Prezzi medi per provincia calcolati sui dati inseriti dagli utenti.
                       </div>
                     </div>
               </AspectRatio>
@@ -318,7 +318,7 @@ export default async function MapOverlay() {
                       </div>
 
                       <div className="text-center text-xs text-slate-400 pt-2 border-t mt-4">
-                        Statistiche elaborate sulle segnalazioni del DB
+                        Statistiche elaborate suli dati inseriti nel DataBase.
                       </div>
 
                     </div>

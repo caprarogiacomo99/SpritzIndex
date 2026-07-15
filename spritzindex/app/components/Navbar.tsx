@@ -53,9 +53,9 @@ const Navbar = async () => {  // Variabileper media sui prezzi.
       {/* items-start allinea il titolo in alto, justify-center viene rimosso per permettergli di stare in alto */}
       <div className="flex-1 flex flex-col items-start mt-2">
         {/* text-3xl rende il titolo più grande e visibile */}
-        <h1 className="text-3xl font-bold">The SpritzIndex</h1>
+        <h1 className="text-3xl font-bold">The SpritzMap</h1>
         <p className="text-sm text-gray-500 mt-6">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+          SpritzMap raccoglie i prezzi degli Spritz in tutto il Veneto per aiutarti a restare aggiornato su trend e prezzi locali. Se vuoi contribuire, puoi aggiungere il tuo bar!
         </p>
       </div>
 
@@ -76,7 +76,7 @@ const Navbar = async () => {  // Variabileper media sui prezzi.
         {/* Testo finale: aggiunto text-left (mobile) e text-right (desktop) per correggere l'allineamento interno */}
         <span className="text-sm tracking-wide text-left md:text-right text-gray-500">
         <p className="text-lg font-bold text-black mb-10 drop-shadow-md">
-          {countBars} bar · {countProvinces} province
+          {countBars} bar verificati· {countProvinces} province
         </p>        
         </span>
         

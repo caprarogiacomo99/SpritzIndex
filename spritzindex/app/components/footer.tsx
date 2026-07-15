@@ -10,18 +10,13 @@ const Footer = () => {
             <div className="space-y-2">
               <p className="text-sm font-semibold text-slate-900">Chi siamo</p>
               <p className="text-sm leading-7 text-slate-600">
-                SpritzIndex raccoglie informazioni essenziali per aiutarti a restare aggiornato su trend, prezzi e locali.
+                Ciao, sono Giacomo, un ingenere appassionato di statistiche, AI e spritx. Ho creato SpritzMap per condividere i prezzi degli Spritz in Veneto e aiutare gli utenti a rimanere aggiornati sui trend locali. L'obbiettivo è quello di avere un reposotory dove sono salvati i prezzi degli Spritz in Veneto, in modo da avere un trend dei prezzi e delle province dove sono più economici, con la speranza di abbassare i prezzi!
               </p>
             </div>
           </div>
 
           <div className="grid gap-8 sm:grid-cols-2">
-            <div className="space-y-2">
-              <p className="text-sm font-semibold text-slate-900">Contatti</p>
-              <p className="text-sm leading-7 text-slate-600">Email: info@spritzindex.it</p>
-              <p className="text-sm leading-7 text-slate-600">Telefono: +39 02 1234 5678</p>
-            </div>
-
+         
             <div className="space-y-2">
               <p className="text-sm font-semibold text-slate-900">Informazioni</p>
               <p className="text-sm leading-7 text-slate-600">Privacy</p>
