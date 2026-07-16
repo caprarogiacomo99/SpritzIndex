@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { supabase } from "@/utils/supabase/client";
 import { AspectRatio } from "@/app/components/ui/aspect-ratio";
+// 1. Importiamo la funzione per disabilitare la cache
+import { unstable_noStore as noStore } from "next/cache";
 
 // --- TIPI ---
 export interface BarData {
@@ -133,23 +135,14 @@ const calcolaPrezziMediPerProvinciaETipo = (datiGrezzi: BarData[]) => {
   });
 };
 
-/* 
-// Funzione non utilizzata nel componente corrente - tenuta per riferimento
-const inserisciBarNelDB = async (nuovoBar: Omit<BarData, 'id'> & { location_citta: string; name: string }) => {
-  const { error } = await supabase.from('bars').insert([nuovoBar]);
-  if (error) {
-    console.error("Errore durante l'inserimento:", error.message);
-    return false;
-  }
-  return true;
-};
-*/
-
 // --- COMPONENTE PRINCIPALE ---
 export default async function MapOverlay() {
+  // 2. Chiamiamo noStore() all'inizio del componente. 
+  // Questo dice a Next.js che la pagina deve essere renderizzata dinamicamente ad ogni richiesta.
+  noStore(); 
+
   const prezziDalDB = await getPrezziDalDB();
   
-  // Eseguiamo tutti i calcoli qui, prima del render
   const prezzoMedioPerOgniProvincia = calcolaPrezziMediPerProvincia(prezziDalDB);
   const datiMatrice = calcolaPrezziMediPerProvinciaETipo(prezziDalDB);
   const datiFrequenza = calcolaFrequenzaPrezzi(prezziDalDB);
@@ -230,6 +223,7 @@ export default async function MapOverlay() {
               <div>
                 <h3 className="text-lg font-bold mb-2 text-orange-900 border-b pb-2 flex items-center justify-between">
                   <span>Prezzo Medio per Provincia e Spritz</span>
+                  <span className="text-xs font-normal text-muted-foreground">€ medio</span>
                 </h3>
                 
                 <div className="min-w-[450px] mt-3">
