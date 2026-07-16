@@ -1,7 +1,8 @@
 "use client";
 
 import { supabase } from "@/utils/supabase/client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation"; // AGGIUNTO IL ROUTER DI NEXT.JS
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
@@ -52,6 +53,7 @@ const verificaIndirizzoNominatim = async (nome: string, citta: string, provincia
 };
 
 export default function MapOverlay() {
+  const router = useRouter(); // INIZIALIZZA IL ROUTER
 
   const [nome, setNome] = useState("");
   const [provincia, setProvincia] = useState("");
@@ -65,7 +67,6 @@ export default function MapOverlay() {
   const [mostraPopup, setMostraPopup] = useState(false);
   const [messaggio, setMessaggio] = useState<string | null>(null);
 
- 
   const isFormValid = nome.trim() && provincia && citta.trim() && prezzo && tipoSpritz && isAdult;
 
   const handleAvviaVerifica = async () => {
@@ -85,7 +86,7 @@ export default function MapOverlay() {
     }
   };
 
-const handleConfermaInserimentoDB = async () => {
+  const handleConfermaInserimentoDB = async () => {
     setIsLoading(true);
 
     const { error } = await supabase.from('bars').insert([{
@@ -111,7 +112,10 @@ const handleConfermaInserimentoDB = async () => {
       setProvincia("");
       setTipoSpritz(null);
       setIsAdult(false);
-      window.location.reload();
+      
+      // SOSTITUITO window.location.reload() con router.refresh()
+      router.refresh(); 
+      
     } else {
       console.error("Dettaglio errore Supabase:", error);
       setMessaggio(`Errore DB: ${error.message || "Controlla la console"}`);
@@ -120,14 +124,12 @@ const handleConfermaInserimentoDB = async () => {
 
   return (
     <main className="flex flex-col items-center p-4">
-      
       {/* Contenitore principale (La Card) */}
       <div className="w-full w-full py-12 px-8 rounded-3xl border border-black/20 text-black shadow-xl bg-[url('/RicercaSpritz.jpeg')] bg-cover bg-center">
         <div className="flex flex-col items-center text-center">
           <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-2 drop-shadow-md">
             Trova il tuo locale
           </h2>
-          
           
           {/* Griglia Campi di Input */}
           <div className="grid w-full gap-4 grid-cols-1 md:grid-cols-5 items-center">
